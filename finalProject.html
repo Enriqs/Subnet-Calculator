@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subnet Calculator</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+    <style>
+        body{
+            display: flex;
+            column-gap: 5vh;
+            /* justify-content: ; */
+            /* text-align: left; */
+        }
+        .inputs{
+            display: flex;
+            flex-direction: column;
+            row-gap: 4vh;
+        }
+        .inputs>section{
+            border: 1px solid gray;
+            border-radius: 30px;
+            background-color: darkgray;
+            display: flex;
+            flex-direction: column;
+            row-gap: .5vh;
+            padding: 0 5vh 5vh 5vh;
+        }
+        button{
+            border-radius: 10px;
+        }
+        button:hover{
+            cursor: pointer;
+            background-color: gray;
+            color: white;
+        }
+        div{
+            /* background-color: red; */
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        
+    </nav>
+    <article class="inputs">
+        <section>
+            <p>Given network and Subnet Mask, Subnet Calculator</p>
+            <input placeholder="Network e.g. 172.20.0.0">
+            <!-- <input placeholder="Subnet Mask in dotted"> -->
+            <select>
+                <option selected disabled>Select Subnetmask by Prefix or Dec Notation</option>
+            </select>
+            <button>Calculate Subnet</button>
+        </section>
+        <section>
+            <p>Calculate Best Subnet Mask Given hosts number:</p>
+            <input placeholder="Number of hosts">
+            <button>Calculate Subnet Mask</button>
+        </section>
+        <section>
+            <p>Given network and Number of subnets to accommodate, Calculate best Subnet Mask</p>
+            <input placeholder="Network e.g. 172.20.0.0">
+            <input placeholder="Number of subnets">
+            <button>Calculate Subnet Mask</button>
+        </section>
+        <section>
+            <p>Binary To Decimal</p>
+            <input placeholder="Binary number e.g. 11001">
+            <button>Get Decimal Number</button>
+        </section>
+        <section>
+            <p>Decimal To Binary</p>
+            <input placeholder="Decimal number e.g. 25">
+            <button>Get Binary Number</button>
+        </section>
+    </article>
+    <article>
+        <div>
+        </div>
+        <span></span>
+        <table border="1" hidden >
+            <thead>
+                <tr>
+                    <th>Subnet Address</th>
+                    <th>Directed Broadcast Address</th>
+                    <th>Usable IP Addresses</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+        <br>
+        <h3 hidden>Displaying Data Results</h3>
+        <br>
+        <table border="1" hidden>
+            <tbody>
+                <tr>
+                    <td>IP Address</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Network Address</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>IP Class</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Subnet Mask</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Binary Subnet Mask</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Prefix Notation</td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+    </article>
+</body>
+    <script>
+        
+
+        const decToBinary =(x)=>{ // Gets decimal number (0-9)
+            let str=''; //string
+            let b=''; // binary digit
+            // each iteration the number is being divided by two
+            while(x/2>0){ // x= number decimal we want to convert into binary, Stops loop when x reaches 0
+                if(x%2==0){ // here we take remainder of division and store it in b
+                    b='0'; //we store remainder
+                    x=x/2; //we divide by two
+                }else{
+                    b='1'; //we store remainder
+                    x=(x/2)-0.5; //divide by two and substract 0.5 if there is 1 as remainder
+                }
+                str=b+str; //str storing all bs(all digits)
+            }   
+            // console.log(str); //str is our binary number
+            return(str); // finnish function and returns the string
+        }
+
+        const binaryToDec =(x)=>{ //binary number 10110
+            let reverse='';
+            for (let digit of x){ //11101
+                reverse=digit+reverse;
+            }
+            let power=0; //power 
+            let dec=0; //decimal we want 01101
+            for (let digit of reverse){
+                dec=dec+parseInt(digit)*(2**power++);
+            }
+            // console.log(dec);
+            return(dec);
+        }
+        
+
+        const prefixNotation = (subnetMask)=>{  //Given SubnetMask eg: '255.255.255.248' will determine /prefix
+            let arr=subnetMask.split(".");
+            let binOctet=[];
+            for (let octet in arr){
+                binOctet[octet]=decToBinary(parseInt(arr[octet]));
+            } 
+            // console.log(binOctet); //Given eg SubnetMask binOctet should be an array with these numbers: '11111111.11111111.11111111.11111000'
+            let prefix=0;
+            let flag=true;
+            for (let idx in binOctet){
+                for (let digit of binOctet[idx]){
+                    if (digit==1){
+                        prefix++;
+                    }else{
+                        flag=false;
+                        break;
+                    }
+                }
+                if (flag===false){
+                    break;
+                }
+            }
+            // console.log(prefix);
+            return(prefix);
+        }
+
+        const prefixToBin=(prefix)=>{
+            prefix=parseInt(prefix);
+            let str='';
+            for (let i=0;i<4*8;i++){
+                if (i%8==0 && i>0){
+                    str=str+'.';
+                }
+                if(prefix>0){
+                    str=str+'1';
+                    prefix--;
+                }else{
+                    str=str+'0';
+                }
+            }
+            return str;
+        }
+
+        const prefixToDec = (prefix)=>{ //given prefix we calculate dotted dec notation
+            let str=prefixToBin(prefix);
+            //console.log(str); // Until here returns dotted in binary
+            let arr=str.split(".");
+            let newstr='';
+            for (let i=0;i<4;i++){
+                arr[i]=binaryToDec(arr[i]);
+                newstr=newstr+arr[i];
+                if (i==3){
+                    continue;
+                }
+                newstr=newstr+'.';
+            }
+            // console.log(newstr);
+            // console.log(arr);
+            return(newstr); //returning array of dotted in dec
+        }
+
+        const numberOfSubnets = (s)=>{ //s is the number of borrowed bits
+            s=parseInt(s);
+            return(2**s); 
+        }
+
+        const numberOfBits = (subnets)=>{
+            let x=0;
+            while(2**x<subnets){ //subnets+2
+                x++;
+            }
+            // console.log(x);
+            return(x);
+        }
+        const numberOfBitsHosts = (hosts)=>{
+            let x=2;
+            while(2**x-2<hosts){ //2**hosts-2
+                x++;
+            }
+            // console.log(x);
+            return(x);
+        }
+
+        const detClass = (ipadress)=>{ // Receives string on dec dotted notation eg: 183.94.122.73
+            ipadress=ipadress.split('.');
+            let x= decToBinary(parseInt(ipadress[0]));
+            let c=null; //class
+            if (x[0]==0){
+                c='A';
+            }else if(x[1]==0){
+                c='B';
+            }else{
+                c='C'
+            }
+            //console.log(c); // returns class
+            return(c);
+        }
+
+        const classPrefix = (prefix) =>{
+            if (prefix>7 && prefix<16){
+                return 'A'
+            } else if (prefix>15 && prefix<24){
+                return 'B'
+            }else if (prefix>23 && prefix<31){
+                return 'C'
+            }else{
+                console.log('out of range');
+            }
+        }
+
+        const calNumSubnets = (ip,bits)=>{ // ip adress and size-bits subnet mask //custom subnet mask
+            let c=(detClass(ip));
+            let s=0; //s is the number of borrowed bits
+            if (c=='A'){
+                s=bits-8;
+            }else if(c=='B'){
+                s=bits-16;
+            }else{
+                s=bits-24;
+            }
+            return(numberOfSubnets(s))
+        }
+
+        const bestSubnetMask = (ip,bits)=>{ //bits to borrow
+            let c=(detClass(ip));
+            let s=0; //s is the number of borrowed bits
+            // console.log(bits);
+            // console.log(c);
+            if (c=='A'){
+                s=bits+8;
+            }else if(c=='B'){
+                s=bits+16;
+            }else{
+                s=bits+24;
+            }
+            // console.log(s)
+            return(s);
+        }
+
+        const availableHosts = (prefix)=>{
+            //let prefix=28;//********************
+            let numOfHostBits=32-prefix;
+            let assignableIPadresses=2**numOfHostBits-2;
+        }
+
+        const subnetMaskHosts = (hosts)=>{
+            let totalNumberOfBits= 32-numberOfBitsHosts(hosts);
+            return prefixToDec(totalNumberOfBits);
+        }
+
+        const IPAddressRanges = (ip,prefix,controller=null) =>{ //prefix is bits subnetmask
+            let arr= prefixToBin(prefix).split('.');
+            // console.log(arr);
+            let counter=0;
+            let flag=true;
+            for (let octet of arr){
+                for (let i in octet){
+                    if (octet[i]=='0'){
+                        flag=false;
+                        if (i==0){
+                            counter--;
+                        }
+                        break;
+                    }
+                }
+                if(flag===true){
+                    counter++;
+                }else{
+                    break;
+                }
+            }
+            //console.log(counter); // Number index Octet last '1'
+            let blockSize=256-binaryToDec(arr[counter]);
+            // console.log(blockSize);
+            let arrIP=ip.split('.');
+            // arrIP[counter]=0;
+            let subnets=[]; //subnet Address
+            let broadcastAddress=[]; // BroadcastAddresses
+            let usableAddress=[];
+            let j=0;
+            for (let i=0;i<=255;i=i+blockSize){
+                let str='';
+                let broadstr='';
+                let inistr='';
+                let endstr='';
+                for (let idx=0; idx<4;idx++){
+                    if (counter==idx){
+                        str=str+i+'.';
+                        broadstr=broadstr+(i+blockSize-1)+'.';
+                        continue;
+                    }else if(counter<idx){
+                        str=str+0+'.';
+                        broadstr=broadstr+255+'.';
+                        continue;
+                    }
+                    str=str+arrIP[idx]+'.';
+                    broadstr=broadstr+arrIP[idx]+'.';
+                }
+                str=str.slice(0,-1);
+                broadstr=broadstr.slice(0,-1);
+                subnets[j]=str;
+                broadcastAddress[j]=broadstr;
+                inistr=str.split('.'); 
+                inistr=inistr[0]+'.'+inistr[1]+'.'+inistr[2]+'.'+(parseInt(inistr[3])+1);
+                endstr=broadstr.split('.');
+                endstr=endstr[0]+'.'+endstr[1]+'.'+endstr[2]+'.'+(endstr[3]-1);
+                // endstr=broadstr;
+                usableAddress[j++]=inistr+' - '+endstr;
+            }
+            if (controller==1){
+                return(subnets);
+            }else if(controller==2){
+                return(broadcastAddress);
+            }else if(controller==3){
+                return(usableAddress);
+            }else{
+                console.log(subnets);
+                console.log(broadcastAddress);
+                console.log(usableAddress);
+            }
+        }
+
+        const hostsSubnet=()=>{ // Calculating subnet mask given hosts
+            let numHosts=$('input').eq(1).val();
+            $('article>div').children().remove();
+            $('span').children().remove();
+            if (numHosts>0){
+                $('article>div').html('<h4> The best Subnet Mask for '+ numHosts +' hosts is: '+subnetMaskHosts(numHosts)+'/'+prefixNotation(subnetMaskHosts(numHosts))+'</h4>');
+            }else{
+                $('article>div').html('<h4> Type a valid host number</h4>');
+            }
+        }
+        const subnetsMask=()=>{ // Calculating subnet mask given subnets to acomodate
+            let ip=$('input').eq(2).val();
+            let numSubnets=$('input').eq(3).val();
+            $('article>div').children().remove();
+            $('span').children().remove();
+            if (ip!='' && numSubnets>0){
+                try {
+                    $('article>div').html('<h4> The best Subnet Mask for '+ numSubnets +' subnets is: '+prefixToDec(bestSubnetMask(ip,numberOfBits(numSubnets)))+'/'+bestSubnetMask(ip,numberOfBits(numSubnets))+'</h4>');
+                } catch (error) {
+                alert(error);
+                }
+            }else{
+                $('article>div').html('<h4> Type a valid IP and number of subnets</h4>');
+            }
+        }
+
+        const subnetCal = () =>{
+            let ip=$('input').eq(0).val();
+            let subnetMask=$('select').val();
+            // subnetMask=prefixNotation(subnetMask);
+            $('article>div').children().remove();
+            $('tbody').eq(0).children().remove();
+            $('span').children().remove();
+            if (ip!='' && subnetMask>0){
+                try {
+                    // $('article>div').html('<h4> Prefix Notation: '+ subnetMask +'; Subnet is: '+prefixToDec(subnetMask)+'; IP Class: '+detClass(ip)+'</h4>');
+                    
+                    $('table').show();
+                    $('h3').show();
+                    let subnets=IPAddressRanges(ip,subnetMask,1); //subnet Address
+                    let broadcastAddress=IPAddressRanges(ip,subnetMask,2); // BroadcastAddresses
+                    let usableAddress=IPAddressRanges(ip,subnetMask,3);
+                    let arrTable2=[ip,subnets[0],'IP Class '+detClass(ip),prefixToDec(subnetMask),prefixToBin(subnetMask),'/'+subnetMask]
+                    $('article>div').html('<h4>Displaying all '+(subnets.length)+' results </h4>');
+                    for (let idx in subnets){
+                        let tr=$('<tr></tr>');
+                        $('tbody').eq(0).append(tr);
+                        tr=$('tbody').eq(0).children().eq(idx);
+                        for (let i=0; i<3;i++){
+                            let td=$('<td></td>');
+                            tr.append(td);
+                        }
+                        td=tr.children().eq(0);
+                        td.text(subnets[idx]);
+                        td=tr.children().eq(1);
+                        td.text(broadcastAddress[idx]);
+                        td=tr.children().eq(2);
+                        td.text(usableAddress[idx]);
+                    }
+                    // console.log(arrTable2);
+                    for (let j=0;j<6;j++){
+                        let tr2=$('tbody').eq(1).children().eq(j);
+                        let td2=tr2.children().eq(1);
+                        td2.text(arrTable2[j]);
+                    }
+
+                    // $('article>div').html('<h4> The best Subnet Mask for '+ numSubnets +' subnets is: '+prefixToDec(bestSubnetMask(ip,numberOfBits(numSubnets)))+'/'+bestSubnetMask(ip,numberOfBits(numSubnets))+'</h4>');
+                } catch (error) {
+                alert(error);
+                }
+            }else{
+                $('article>div').html('<h4> Type a valid IP and number of subnets</h4>');
+            }
+            // $('article>div').children().remove();
+            
+        }
+
+        const toDec =()=>{
+            let bin=$('input').eq(4).val();
+            $('article>div').children().remove();
+            $('span').children().remove();
+            if (bin!=''){
+                $('span').html('<h3 style="position: fixed;">Binary: '+bin+' => '+binaryToDec(bin)+':Decimal</h3>');
+            }else{
+                $('span').html('<h3 style="position: fixed;"> Type a valid number</h3>');
+            }
+        }
+        const toBin =()=>{
+            let dec=$('input').eq(5).val();
+            dec=parseInt(dec);
+            $('span').children().remove();
+            $('article>div').children().remove();
+            if (dec>0){
+                $('span').html('<h3 style="position: fixed;">Decimal: '+dec+' => '+decToBinary(dec)+':Binary</h3>'); 
+            }else{
+                $('span').html('<h3 style="position: fixed;"> Type a number</h3>');
+            }
+        }
+
+        // console.log(calNumSubnets('192.168.1.0',28));
+
+        // detClass('172.16.0.0');
+    
+        // prefixToDec(17);
+        
+        // prefixNotation('255.255.255.248');
+        // console.log(prefixNotation('192.168.1.0'));
+
+        // binaryToDec(decToBinary(8));
+
+        // 172.20.0.0/16 network
+        // use a subnet mask that will accommodate 47 subnets
+        // What subnet mask will you use?
+
+        // numberOfBits(47);
+        // console.log(prefixToDec(bestSubnetMask('172.20.0.0',numberOfBits(47))));
+        
+        // Your company has been assigned the 172.20.0.0/16 network for use at one of its sites.
+        // You need to calculate a subnet mask that will accommodate 100 hosts per subnet while
+        // maximizing the number of available subnets. What subnet mask will you use?
+
+        //console.log(subnetMaskHosts(100));
+
+
+
+
+        // IPAddressRanges('192.168.10.0',27); //subnets created from a classful network given a subnet mask
+        // IPAddressRanges('192.168.0.0',26); //subnets created from a classful network given a subnet mask
+        //IPAddressRanges('172.25.0.0',25); //subnets created from a classful network given a subnet mask
+
+        $('button').eq(1).click(()=>{
+            $('table').hide();
+            $('h3').hide();
+            hostsSubnet();
+        });
+        $('button').eq(2).click(()=>{
+            $('table').hide();
+            $('h3').hide();
+            subnetsMask();
+        });
+        $('button').eq(3).click(()=>{
+            $('table').hide();
+            $('h3').hide();
+            toDec();
+        });
+        $('button').eq(4).click(()=>{
+            $('table').hide();
+            $('h3').hide();
+            toBin();
+        });
+        $('button').eq(0).click(()=>{
+            subnetCal();
+        });
+
+        const selectPop = () =>{
+            for (let i=8;i<31;i++){
+                let opt=$('<option value="'+i+'"> '+prefixToDec(i)+'/'+i+' Class '+classPrefix(i) +' </option>');
+                $('select').append(opt);
+            }
+        }
+        selectPop();
+
+
+    </script>
+</html>
