@@ -50,24 +50,28 @@
     </nav>
     <article class="inputs">
         <section>
-            <p>Given network and Subnet Mask, Subnet Calculator</p>
+            <p>Network or IP address</p>
             <input placeholder="Network e.g. 172.20.0.0">
+        </section>
+        <section>
+            <p>Subnet Calculator With Prefered Mask</p>
+            <!-- <input placeholder="Network e.g. 172.20.0.0"> -->
             <!-- <input placeholder="Subnet Mask in dotted"> -->
             <select>
                 <option selected disabled>Select Subnetmask by Prefix or Dec Notation</option>
             </select>
-            <button>Calculate Subnet</button>
+            <button>Calculate Subnets</button>
         </section>
         <section>
-            <p>Calculate Best Subnet Mask Given hosts number:</p>
+            <p>Calculate Subnets given hosts number:</p>
             <input placeholder="Number of hosts">
-            <button>Calculate Subnet Mask</button>
+            <button>Calculate Subnets</button>
         </section>
         <section>
-            <p>Given network and Number of subnets to accommodate, Calculate best Subnet Mask</p>
-            <input placeholder="Network e.g. 172.20.0.0">
+            <p>Calculate Subnets given number of subnets to accommodate</p>
+            <!-- <input placeholder="Network e.g. 172.20.0.0"> -->
             <input placeholder="Number of subnets">
-            <button>Calculate Subnet Mask</button>
+            <button>Calculate Subnets</button>
         </section>
         <section>
             <p>Binary To Decimal</p>
@@ -388,22 +392,26 @@
 
         const hostsSubnet=()=>{ // Calculating subnet mask given hosts
             let numHosts=$('input').eq(1).val();
+            let ip=$('input').eq(0).val();
             $('article>div').children().remove();
             $('span').children().remove();
             if (numHosts>0){
-                $('article>div').html('<h4> The best Subnet Mask for '+ numHosts +' hosts is: '+subnetMaskHosts(numHosts)+'/'+prefixNotation(subnetMaskHosts(numHosts))+'</h4>');
+                $('article>div').html('<h3> The best Subnet Mask for '+ numHosts +' hosts is: '+subnetMaskHosts(numHosts)+'/'+prefixNotation(subnetMaskHosts(numHosts))+'</h3>');
+                if (ip!=''){
+                    createTable(ip,prefixNotation(subnetMaskHosts(numHosts)));
+                }
             }else{
                 $('article>div').html('<h4> Type a valid host number</h4>');
             }
         }
         const subnetsMask=()=>{ // Calculating subnet mask given subnets to acomodate
-            let ip=$('input').eq(2).val();
-            let numSubnets=$('input').eq(3).val();
+            let ip=$('input').eq(0).val();
+            let numSubnets=$('input').eq(2).val();
             $('article>div').children().remove();
             $('span').children().remove();
             if (ip!='' && numSubnets>0){
                 try {
-                    $('article>div').html('<h4> The best Subnet Mask for '+ numSubnets +' subnets is: '+prefixToDec(bestSubnetMask(ip,numberOfBits(numSubnets)))+'/'+bestSubnetMask(ip,numberOfBits(numSubnets))+'</h4>');
+                    createTable(ip,bestSubnetMask(ip,numberOfBits(numSubnets)));
                 } catch (error) {
                 alert(error);
                 }
@@ -416,6 +424,10 @@
             let ip=$('input').eq(0).val();
             let subnetMask=$('select').val();
             // subnetMask=prefixNotation(subnetMask);
+            createTable(ip,subnetMask);
+        }
+
+        const createTable = (ip,subnetMask) =>{
             $('article>div').children().remove();
             $('tbody').eq(0).children().remove();
             $('span').children().remove();
@@ -460,11 +472,10 @@
                 $('article>div').html('<h4> Type a valid IP and number of subnets</h4>');
             }
             // $('article>div').children().remove();
-            
         }
 
         const toDec =()=>{
-            let bin=$('input').eq(4).val();
+            let bin=$('input').eq(3).val();
             $('article>div').children().remove();
             $('span').children().remove();
             if (bin!=''){
@@ -474,7 +485,7 @@
             }
         }
         const toBin =()=>{
-            let dec=$('input').eq(5).val();
+            let dec=$('input').eq(4).val();
             dec=parseInt(dec);
             $('span').children().remove();
             $('article>div').children().remove();
