@@ -54,7 +54,7 @@
             <input placeholder="Network e.g. 172.20.0.0">
         </section>
         <section>
-            <p>Subnet Calculator With Prefered Mask</p>
+            <p>Subnet Calculator With Preferred Mask</p>
             <!-- <input placeholder="Network e.g. 172.20.0.0"> -->
             <!-- <input placeholder="Subnet Mask in dotted"> -->
             <select>
@@ -441,7 +441,7 @@
                     let broadcastAddress=IPAddressRanges(ip,subnetMask,2); // BroadcastAddresses
                     let usableAddress=IPAddressRanges(ip,subnetMask,3);
                     let arrTable2=[ip,subnets[0],'IP Class '+detClass(ip),prefixToDec(subnetMask),prefixToBin(subnetMask),'/'+subnetMask]
-                    $('article>div').html('<h4>Displaying all '+(subnets.length)+' results </h4>');
+                    $('article>div').html('<h3>Displaying all '+(subnets.length)+' results </h3>');
                     for (let idx in subnets){
                         let tr=$('<tr></tr>');
                         $('tbody').eq(0).append(tr);
