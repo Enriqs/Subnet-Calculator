@@ -7,11 +7,53 @@
     <title>Subnet Calculator</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
     <style>
+        h1{
+            text-align: center;
+            color: white;
+        }
+        nav{
+            background-color: gray;
+        }
+        thead>tr{
+            background-color: gray;
+            color: white;
+            border: 1px solid black;
+        }
+        thead{
+            text-align: center;
+        }
+        th{
+            border: 1px solid black;
+            padding: 3px 3px;
+        }
+        table {
+            border-collapse: collapse;
+        }
+        td{
+            padding-left: 10px;
+            padding-right: 3px;
+            border: 1px solid black;
+        }
+        tbody>tr:nth-child(even) {
+            background-color: rgba(197, 197, 197, 0.493);
+        }
+
         body{
             display: flex;
+            flex-direction: column;
             column-gap: 5vh;
+            row-gap: 5vh;
             /* justify-content: ; */
             /* text-align: left; */
+        }
+        article{
+            width: 40%;
+        }
+        main{
+            display: flex;
+            /* column-gap: 10vh; */
+            justify-content: space-evenly;
+
         }
         .inputs{
             display: flex;
@@ -42,95 +84,101 @@
             align-items: center;
             justify-content: center;
         }
+
+        br + table td:first-child{
+            font-weight: bolder;
+        }
     </style>
 </head>
 <body>
     <nav>
-        
+        <h1>Subnet Calculator</h1>
     </nav>
-    <article class="inputs">
-        <section>
-            <p>Network or IP address</p>
-            <input placeholder="Network e.g. 172.20.0.0">
-        </section>
-        <section>
-            <p>Subnet Calculator With Preferred Mask</p>
-            <!-- <input placeholder="Network e.g. 172.20.0.0"> -->
-            <!-- <input placeholder="Subnet Mask in dotted"> -->
-            <select>
-                <option selected disabled>Select Subnetmask by Prefix or Dec Notation</option>
-            </select>
-            <button>Calculate Subnets</button>
-        </section>
-        <section>
-            <p>Calculate Subnets given hosts number:</p>
-            <input placeholder="Number of hosts">
-            <button>Calculate Subnets</button>
-        </section>
-        <section>
-            <p>Calculate Subnets given number of subnets to accommodate</p>
-            <!-- <input placeholder="Network e.g. 172.20.0.0"> -->
-            <input placeholder="Number of subnets">
-            <button>Calculate Subnets</button>
-        </section>
-        <section>
-            <p>Binary To Decimal</p>
-            <input placeholder="Binary number e.g. 11001">
-            <button>Get Decimal Number</button>
-        </section>
-        <section>
-            <p>Decimal To Binary</p>
-            <input placeholder="Decimal number e.g. 25">
-            <button>Get Binary Number</button>
-        </section>
-    </article>
-    <article>
-        <div>
-        </div>
-        <span></span>
-        <table border="1" hidden >
-            <thead>
-                <tr>
-                    <th>Subnet Address</th>
-                    <th>Directed Broadcast Address</th>
-                    <th>Usable IP Addresses</th>
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
-        <br>
-        <h3 hidden>Displaying Data Results</h3>
-        <br>
-        <table border="1" hidden>
-            <tbody>
-                <tr>
-                    <td>IP Address</td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td>Network Address</td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td>IP Class</td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td>Subnet Mask</td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td>Binary Subnet Mask</td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td>Prefix Notation</td>
-                    <td></td>
-                </tr>
-            </tbody>
-        </table>
-    </article>
+    <main>
+        <article class="inputs">
+            <section>
+                <p>Network or IP address</p>
+                <input placeholder="Network e.g. 172.20.0.0">
+            </section>
+            <section>
+                <p>Subnet Calculator With Preferred Mask</p>
+                <!-- <input placeholder="Network e.g. 172.20.0.0"> -->
+                <!-- <input placeholder="Subnet Mask in dotted"> -->
+                <select>
+                    <option selected disabled>Select Subnetmask by Prefix or Dec Notation</option>
+                </select>
+                <button>Calculate Subnets</button>
+            </section>
+            <section>
+                <p>Calculate Subnets given hosts number:</p>
+                <input placeholder="Number of hosts">
+                <button>Calculate Subnets</button>
+            </section>
+            <section>
+                <p>Calculate Subnets given number of subnets to accommodate</p>
+                <!-- <input placeholder="Network e.g. 172.20.0.0"> -->
+                <input placeholder="Number of subnets">
+                <button>Calculate Subnets</button>
+            </section>
+            <section>
+                <p>Binary To Decimal</p>
+                <input placeholder="Binary number e.g. 11001">
+                <button>Get Decimal Number</button>
+            </section>
+            <section>
+                <p>Decimal To Binary</p>
+                <input placeholder="Decimal number e.g. 25">
+                <button>Get Binary Number</button>
+            </section>
+        </article>
+        <article>
+            <div>
+            </div>
+            <span></span>
+            <table hidden >
+                <thead>
+                    <tr>
+                        <th>Subnet Address</th>
+                        <th>Directed Broadcast Address</th>
+                        <th>Usable IP Addresses</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+            <br>
+            <h3 hidden>Displaying Data Results</h3>
+            <br>
+            <table hidden>
+                <tbody>
+                    <tr>
+                        <td>IP Address</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Network Address</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>IP Class</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Subnet Mask</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Binary Subnet Mask</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Prefix Notation</td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+        </article>
+    </main>
 </body>
     <script>
         
