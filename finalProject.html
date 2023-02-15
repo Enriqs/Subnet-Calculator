@@ -440,7 +440,7 @@
 
         const hostsSubnet=()=>{ // Calculating subnet mask given hosts
             let numHosts=$('input').eq(1).val();
-            if(HostException(numHosts) === true) {
+            if(HostException(numHosts) == true) {
                 let ip=$('input').eq(0).val();
                 $('article>div').children().remove();
                 $('span').children().remove();
@@ -452,7 +452,9 @@
                 }else{
                     $('article>div').html('<h4> Type a valid host number</h4>');
                 }
-            } alert("something happens this alert is from hostSubnet()")
+            } else {
+                alert("something happens this alert is from hostSubnet()")
+            }
         }
         const subnetsMask=()=>{ // Calculating subnet mask given subnets to acomodate
             let ip=$('input').eq(0).val();
@@ -675,13 +677,15 @@
                 if(48 <= hosts[i].charCodeAt() && hosts[i].charCodeAt() <= 57) {
                     continue;
                 } else {
-                    return false;
+                    alert("charcode")
+                    return "charcode";
                 }
             }
             if(hosts <= 4294967296 && hosts > 0 && hosts.indexOf(0) !== 0) {
                 return true;
             } else {
-                return false;
+                alert("number of hosts")
+                return "number of hosts";
             }
         }
     </script>

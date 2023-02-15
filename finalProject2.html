@@ -452,7 +452,9 @@
                 }else{
                     $('article>div').html('<h4> Type a valid host number</h4>');
                 }
-            } alert("something happens this alert is from hostSubnet()")
+            } else {
+                // alert("something happens this alert is from hostSubnet()")
+            }
         }
         const subnetsMask=()=>{ // Calculating subnet mask given subnets to acomodate
             let ip=$('input').eq(0).val();
@@ -470,7 +472,7 @@
                     $('article>div').html('<h4> Type a valid IP and number of subnets</h4>');
                 }
             } else {
-                alert("something happenes in subnetMask()");
+                // alert("something happenes in subnetMask()");
             }
         }
 
@@ -481,7 +483,7 @@
                 // subnetMask=prefixNotation(subnetMask);
                 createTable(ip,subnetMask);
             } else {
-                alert("something happens in subnetCal()")
+                // alert("something happens in subnetCal()")
             }
         }
 
@@ -675,12 +677,14 @@
                 if(48 <= hosts[i].charCodeAt() && hosts[i].charCodeAt() <= 57) {
                     continue;
                 } else {
+                    alert("illegal host number! or contain some letter other than number")
                     return false;
                 }
             }
             if(hosts <= 4294967296 && hosts > 0 && hosts.indexOf(0) !== 0) {
                 return true;
             } else {
+                alert("illegal host number that could be minus or incredible number")
                 return false;
             }
         }
