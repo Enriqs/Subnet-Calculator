@@ -148,7 +148,6 @@
             // console.log(str); //str is our binary number
             return(str); // finnish function and returns the string
         }
-
         const binaryToDec =(x)=>{ //binary number 10110
             let reverse='';
             for (let digit of x){ //11101
@@ -162,8 +161,6 @@
             // console.log(dec);
             return(dec);
         }
-        
-
         const prefixNotation = (subnetMask)=>{  //Given SubnetMask eg: '255.255.255.248' will determine /prefix
             let arr=subnetMask.split(".");
             let binOctet=[];
@@ -189,7 +186,6 @@
             // console.log(prefix);
             return(prefix);
         }
-
         const prefixToBin=(prefix)=>{
             prefix=parseInt(prefix);
             let str='';
@@ -206,7 +202,6 @@
             }
             return str;
         }
-
         const prefixToDec = (prefix)=>{ //given prefix we calculate dotted dec notation
             let str=prefixToBin(prefix);
             //console.log(str); // Until here returns dotted in binary
@@ -224,12 +219,10 @@
             // console.log(arr);
             return(newstr); //returning array of dotted in dec
         }
-
         const numberOfSubnets = (s)=>{ //s is the number of borrowed bits
             s=parseInt(s);
             return(2**s); 
         }
-
         const numberOfBits = (subnets)=>{
             let x=0;
             while(2**x<subnets){ //subnets+2
@@ -246,7 +239,6 @@
             // console.log(x);
             return(x);
         }
-
         const detClass = (ipadress)=>{ // Receives string on dec dotted notation eg: 183.94.122.73
             ipadress=ipadress.split('.');
             let x= decToBinary(parseInt(ipadress[0]));
@@ -261,7 +253,6 @@
             //console.log(c); // returns class
             return(c);
         }
-
         const classPrefix = (prefix) =>{
             if (prefix>7 && prefix<16){
                 return 'A'
@@ -273,7 +264,6 @@
                 console.log('out of range');
             }
         }
-
         const calNumSubnets = (ip,bits)=>{ // ip adress and size-bits subnet mask //custom subnet mask
             let c=(detClass(ip));
             let s=0; //s is the number of borrowed bits
@@ -286,7 +276,6 @@
             }
             return(numberOfSubnets(s))
         }
-
         const bestSubnetMask = (ip,bits)=>{ //bits to borrow
             let c=(detClass(ip));
             let s=0; //s is the number of borrowed bits
@@ -302,18 +291,15 @@
             // console.log(s)
             return(s);
         }
-
         const availableHosts = (prefix)=>{
             //let prefix=28;//********************
             let numOfHostBits=32-prefix;
             let assignableIPadresses=2**numOfHostBits-2;
         }
-
         const subnetMaskHosts = (hosts)=>{
             let totalNumberOfBits= 32-numberOfBitsHosts(hosts);
             return prefixToDec(totalNumberOfBits);
         }
-
         const IPAddressRanges = (ip,prefix,controller=null) =>{ //prefix is bits subnetmask
             let arr= prefixToBin(prefix).split('.');
             // console.log(arr);
@@ -385,83 +371,96 @@
                 console.log(usableAddress);
             }
         }
-
-        const hostsSubnet=()=>{ // Calculating subnet mask given hosts
+        const hostsSubnet=()=>{ // Calculating subnet mask given hosts 
             let numHosts=$('input').eq(1).val();
-            $('article>div').children().remove();
-            $('span').children().remove();
-            if (numHosts>0){
-                $('article>div').html('<h4> The best Subnet Mask for '+ numHosts +' hosts is: '+subnetMaskHosts(numHosts)+'/'+prefixNotation(subnetMaskHosts(numHosts))+'</h4>');
-            }else{
-                $('article>div').html('<h4> Type a valid host number</h4>');
+            if(HostException(numHosts) == true) {
+                $('article>div').children().remove();
+                $('span').children().remove();
+                if (numHosts>0){
+                    $('article>div').html('<h4> The best Subnet Mask for '+ numHosts +' hosts is: '+subnetMaskHosts(numHosts)+'/'+prefixNotation(subnetMaskHosts(numHosts))+'</h4>');
+                }else{
+                    $('article>div').html('<h4> Type a valid host number</h4>');
+                }
+            } else {
+                alert("illegal host number")
             }
         }
         const subnetsMask=()=>{ // Calculating subnet mask given subnets to acomodate
             let ip=$('input').eq(2).val();
             let numSubnets=$('input').eq(3).val();
-            $('article>div').children().remove();
-            $('span').children().remove();
-            if (ip!='' && numSubnets>0){
-                try {
-                    $('article>div').html('<h4> The best Subnet Mask for '+ numSubnets +' subnets is: '+prefixToDec(bestSubnetMask(ip,numberOfBits(numSubnets)))+'/'+bestSubnetMask(ip,numberOfBits(numSubnets))+'</h4>');
-                } catch (error) {
-                alert(error);
+            if(IpException(ip) == true && SubnetExceeption(numSubnets) == true) {
+                $('article>div').children().remove();
+                $('span').children().remove();
+                if (ip!='' && numSubnets>0){
+                    try {
+                        $('article>div').html('<h4> The best Subnet Mask for '+ numSubnets +' subnets is: '+prefixToDec(bestSubnetMask(ip,numberOfBits(numSubnets)))+'/'+bestSubnetMask(ip,numberOfBits(numSubnets))+'</h4>');
+                    } catch (error) {
+                    alert(error);
+                    }
+                }else{
+                    $('article>div').html('<h4> Type a valid IP and number of subnets</h4>');
                 }
-            }else{
-                $('article>div').html('<h4> Type a valid IP and number of subnets</h4>');
+            } else {
+                alert("something is wrong")
             }
         }
 
         const subnetCal = () =>{
             let ip=$('input').eq(0).val();
             let subnetMask=$('select').val();
-            // subnetMask=prefixNotation(subnetMask);
-            $('article>div').children().remove();
-            $('tbody').eq(0).children().remove();
-            $('span').children().remove();
-            if (ip!='' && subnetMask>0){
-                try {
-                    // $('article>div').html('<h4> Prefix Notation: '+ subnetMask +'; Subnet is: '+prefixToDec(subnetMask)+'; IP Class: '+detClass(ip)+'</h4>');
-                    
-                    $('table').show();
-                    $('h3').show();
-                    let subnets=IPAddressRanges(ip,subnetMask,1); //subnet Address
-                    let broadcastAddress=IPAddressRanges(ip,subnetMask,2); // BroadcastAddresses
-                    let usableAddress=IPAddressRanges(ip,subnetMask,3);
-                    let arrTable2=[ip,subnets[0],'IP Class '+detClass(ip),prefixToDec(subnetMask),prefixToBin(subnetMask),'/'+subnetMask]
-                    $('article>div').html('<h4>Displaying all '+(subnets.length)+' results </h4>');
-                    for (let idx in subnets){
-                        let tr=$('<tr></tr>');
-                        $('tbody').eq(0).append(tr);
-                        tr=$('tbody').eq(0).children().eq(idx);
-                        for (let i=0; i<3;i++){
-                            let td=$('<td></td>');
-                            tr.append(td);
+            if(IpException(ip) == true && SubnetExceeption(subnetMask) == true) {
+                console.log("done")
+                // subnetMask=prefixNotation(subnetMask);
+                $('article>div').children().remove();
+                $('tbody').eq(0).children().remove();
+                $('span').children().remove();
+                if (ip!='' && subnetMask>0){
+                    try {
+                        // $('article>div').html('<h4> Prefix Notation: '+ subnetMask +'; Subnet is: '+prefixToDec(subnetMask)+'; IP Class: '+detClass(ip)+'</h4>');
+                        
+                        $('table').show();
+                        $('h3').show();
+                        let subnets=IPAddressRanges(ip,subnetMask,1); //subnet Address
+                        let broadcastAddress=IPAddressRanges(ip,subnetMask,2); // BroadcastAddresses
+                        let usableAddress=IPAddressRanges(ip,subnetMask,3);
+                        let arrTable2=[ip,subnets[0],'IP Class '+detClass(ip),prefixToDec(subnetMask),prefixToBin(subnetMask),'/'+subnetMask]
+                        $('article>div').html('<h4>Displaying all '+(subnets.length)+' results </h4>');
+                        for (let idx in subnets){
+                            let tr=$('<tr></tr>');
+                            $('tbody').eq(0).append(tr);
+                            tr=$('tbody').eq(0).children().eq(idx);
+                            for (let i=0; i<3;i++){
+                                let td=$('<td></td>');
+                                tr.append(td);
+                            }
+                            td=tr.children().eq(0);
+                            td.text(subnets[idx]);
+                            td=tr.children().eq(1);
+                            td.text(broadcastAddress[idx]);
+                            td=tr.children().eq(2);
+                            td.text(usableAddress[idx]);
                         }
-                        td=tr.children().eq(0);
-                        td.text(subnets[idx]);
-                        td=tr.children().eq(1);
-                        td.text(broadcastAddress[idx]);
-                        td=tr.children().eq(2);
-                        td.text(usableAddress[idx]);
+                        // console.log(arrTable2);
+                        for (let j=0;j<6;j++){
+                            let tr2=$('tbody').eq(1).children().eq(j);
+                            let td2=tr2.children().eq(1);
+                            td2.text(arrTable2[j]);
+                        }
+    
+                        // $('article>div').html('<h4> The best Subnet Mask for '+ numSubnets +' subnets is: '+prefixToDec(bestSubnetMask(ip,numberOfBits(numSubnets)))+'/'+bestSubnetMask(ip,numberOfBits(numSubnets))+'</h4>');
+                    } catch (error) {
+                    alert(error);
                     }
-                    // console.log(arrTable2);
-                    for (let j=0;j<6;j++){
-                        let tr2=$('tbody').eq(1).children().eq(j);
-                        let td2=tr2.children().eq(1);
-                        td2.text(arrTable2[j]);
-                    }
-
-                    // $('article>div').html('<h4> The best Subnet Mask for '+ numSubnets +' subnets is: '+prefixToDec(bestSubnetMask(ip,numberOfBits(numSubnets)))+'/'+bestSubnetMask(ip,numberOfBits(numSubnets))+'</h4>');
-                } catch (error) {
-                alert(error);
+                }else{
+                    $('article>div').html('<h4> Type a valid IP and number of subnets</h4>');
                 }
+                // $('article>div').children().remove();
             }else{
-                $('article>div').html('<h4> Type a valid IP and number of subnets</h4>');
+                alert("something happen")
             }
-            // $('article>div').children().remove();
-            
         }
+            
+        
 
         const toDec =()=>{
             let bin=$('input').eq(4).val();
@@ -547,6 +546,77 @@
             }
         }
         selectPop();
+
+
+
+
+        ///////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////
+        const IpException = (ip) => {
+            //blocking illegal value here
+            //blocking vacant string
+            if(ip == "") {
+                alert("enter value!!");
+                return false;
+            }
+            //blocking illegal value like alphabet 
+            let ipBox = [];
+            for(let i = 0 ; i < ip.length ; i++) {
+                if(ip[i].charCodeAt() >= 48 && ip[i].charCodeAt() <= 57 || ip[i].charCodeAt() == 46) {
+                    ipBox.push(ip[i]);
+                } else {
+                    console.log(`illegal value ${ip[i].charCodeAt()}`);
+                    alert("your ip address contains illegal character!!");
+                    return false;
+                }
+            }
+            //blocking illegal octed number. 192.168.1 would be rejected because it has only three octeds.
+            ipBox = ipBox.join("").split(".")
+            if(ipBox.length !== 4) {
+                console.log(`illegal octed number ${ipBox}`);
+                alert("illegal ip address. check digits!!");
+                return false;
+            }
+            //blocking illegal ip address more than 255.
+            for(let i = 0 ; i < ipBox.length ; i++) {
+                if(parseInt(ipBox[i]) > 255) {
+                    console.log(`illegal ip number more than 255 ${ipBox[i]}`);
+                    alert("illegal ip address. the number shouldn't be more than 255!!")
+                    return false;
+                }
+            }
+            return true;
+        }
+        const SubnetExceeption = (subnet) => {
+            for(let i = 0 ; i < subnet.length ; i++) { //cheking out if there is any illegal letter
+                if(48 <= subnet[i].charCodeAt() && subnet[i].charCodeAt() <= 57) {
+                    continue;
+                } else {
+                    alert("containing illegal letter");
+                    return false;
+                }
+            }
+            if(subnet < 9 || subnet >= 32) {
+                alert("illegal subnet value!! change code!!");
+                return false;
+            }
+            return true;
+        }
+        const HostException = (hosts) => {
+            for(let i = 0 ; i < hosts.length ; i++) { //cheking out if there is any illegal letter
+                if(48 <= hosts[i].charCodeAt() && hosts[i].charCodeAt() <= 57) {
+                    continue;
+                } else {
+                    return false;
+                }
+            }
+            if(hosts <= 4294967296 && hosts > 0 && hosts.indexOf(0) !== 0) {
+                return true;
+            } else {
+                return false;
+            }
+        }
 
 
     </script>
