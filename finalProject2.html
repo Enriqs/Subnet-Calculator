@@ -202,6 +202,7 @@
         }
 
         const binaryToDec =(x)=>{ //binary number 10110
+            //because the first digit which should be calculated first located on the last of the string.
             let reverse='';
             for (let digit of x){ //11101
                 reverse=digit+reverse;
@@ -220,7 +221,7 @@
             let arr=subnetMask.split(".");
             let binOctet=[];
             for (let octet in arr){
-                binOctet[octet]=decToBinary(parseInt(arr[octet]));
+                binOctet[octet]=decToBinary(parseInt(arr[octet])); //turn decimal to binary and count the number of "1"
             } 
             // console.log(binOctet); //Given eg SubnetMask binOctet should be an array with these numbers: '11111111.11111111.11111111.11111000'
             let prefix=0;
@@ -242,14 +243,14 @@
             return(prefix);
         }
 
-        const prefixToBin=(prefix)=>{
+        const prefixToBin=(prefix)=>{ //could be 9 or 28
             prefix=parseInt(prefix);
             let str='';
             for (let i=0;i<4*8;i++){
                 if (i%8==0 && i>0){
                     str=str+'.';
                 }
-                if(prefix>0){
+                if(prefix>0){ // substract minus 1 undtil prefix number is greater than 0 and add "1" to the string.
                     str=str+'1';
                     prefix--;
                 }else{
@@ -459,7 +460,7 @@
         const subnetsMask=()=>{ // Calculating subnet mask given subnets to acomodate
             let ip=$('input').eq(0).val();
             let numSubnets=$('input').eq(2).val();
-            if(IpException(ip) == true && SubnetExceeption(numSubnets) == true) {
+            if(IpException(ip) == true && SubnetException(numSubnets) == true) {
                 $('article>div').children().remove();
                 $('span').children().remove();
                 if (ip!='' && numSubnets>0){
@@ -479,7 +480,7 @@
         const subnetCal = () =>{
             let ip=$('input').eq(0).val();
             let subnetMask=$('select').val();
-            if(IpException(ip) == true && SubnetExceeption(subnetMask) == true) {
+            if(IpException(ip) == true) {
                 // subnetMask=prefixNotation(subnetMask);
                 createTable(ip,subnetMask);
             } else {
@@ -642,7 +643,7 @@
             }
             //blocking illegal octed number. 192.168.1 would be rejected because it has only three octeds.
             ipBox = ipBox.join("").split(".")
-            if(ipBox.length !== 4) {
+            if(ipBox.length !== 4 || ipBox[3] === "") {
                 console.log(`illegal octed number ${ipBox}`);
                 alert("illegal ip address. check digits!!");
                 return false;
@@ -654,10 +655,15 @@
                     alert("illegal ip address. the number shouldn't be more than 255!!")
                     return false;
                 }
+                if(ipBox[i].indexOf("0") == 0 && ipBox[i].length >= 2) {
+                    console.log(`illegal input. you cannot enter 0 at first of each number`)
+                    alert("illegal input. you cannot enter 0 at first of each number")
+                    return false;
+                }
             }
             return true;
         }
-        const SubnetExceeption = (subnet) => {
+        const SubnetException = (subnet) => {
             for(let i = 0 ; i < subnet.length ; i++) { //cheking out if there is any illegal letter
                 if(48 <= subnet[i].charCodeAt() && subnet[i].charCodeAt() <= 57) {
                     continue;
@@ -666,7 +672,7 @@
                     return false;
                 }
             }
-            if(subnet < 9 || subnet >= 32) {
+            if(subnet < 1 || subnet > 2147483648) { //1**31
                 alert("illegal subnet value!! change code!!");
                 return false;
             }
@@ -681,12 +687,12 @@
                     return false;
                 }
             }
-            if(hosts <= 4294967296 && hosts > 0 && hosts.indexOf(0) !== 0) {
-                return true;
+            if(parseInt(hosts) <= 4294967296 && parseInt(hosts) > 0 && hosts.indexOf(0) !== 0) { //1**32
+                return true; 
             } else {
-                alert("illegal host number that could be minus or incredible number")
+                alert("illegal host number that may be minus or incredible number")
                 return false;
             }
         }
     </script>
-</html>ff
+</html>
